@@ -8,6 +8,8 @@ import wifi
 import mdns
 from adafruit_httpserver import Server, Request, Response, FileResponse
 
+# Setup audio
+# audio = audiobusio.I2SOut(board.D19, board.D13, board.D12)
 
 # Now, HTTP server
 ssid = os.getenv(
@@ -63,7 +65,7 @@ def handle_audio(request: Request, file_name):
 def _play_wave(filename):
     wave_file = open(filename, "rb")
     wave = audiocore.WaveFile(wave_file)
-    print(f"playing wave file: {wave}")
+    print(f"playing wave: {wave_file}")
     i2s = audiobusio.I2SOut(board.D19, board.D13, board.D12)
     i2s.play(wave)
     while i2s.playing:
