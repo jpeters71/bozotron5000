@@ -1,6 +1,6 @@
 <html>
   <head>
-    <style>        
+    <style>
         /* CSS */
         .button {
           align-items: center;
@@ -70,12 +70,21 @@
         .button:disabled {
           box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
         }
+
+        .div {
+          font-size: 24px;
+          font-weight: 500;
+        }
     </style>
 
   </head>
   <script>
+    function get_domain() {
+      return location.protocol + '//' + location.host // Includes port
+    }
+
     const playAudio = async (sound) => {
-      const response = await fetch('http://circuitpython.local/audio/' + sound, {
+      const response = await fetch(get_domain() + '/audio/' + sound, {
         method: 'POST',
         body: {}, // string or object
         headers: {
@@ -85,15 +94,64 @@
       const myJson = await response.json(); //extract JSON from the http response
       // do something with myJson
     }
+
+    const getTempHumidity = async () => {
+      const response = await fetch(get_domain() + '/temperature', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const tempJson = await response.json(); //extract JSON from the http response
+      // do something with myJson
+      const temp = document.getElementById('temp')
+      const humid = document.getElementById('humid')
+      const lastUpdatedDT = document.getElementById('datetime')
+      const now = new Date()
+      temp.value = tempJson.temperature.toFixed(1) + '\u00B0F'
+      humid.value = tempJson.humidity.toFixed(1) + '%'
+      lastUpdatedDT.value = now.toLocaleTimeString()
+    }
+
+
+    const calibrateThermometer = async () => {
+      const response = await fetch(get_domain() + '/temperature', {
+        method: 'POST',
+        body:{},
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const tempJson = await response.json(); //extract JSON from the http response
+      getTempHumidity()
+      alert('Calibration returned ' + tempJson.calibrateStatus)
+    }
+
+    const initializeTimer = async () => {
+      setInterval(() => getTempHumidity(), 300000) // Default 5min
+      getTempHumidity()
+    }
   </script>
-  <body>
+
+  <body onload="initializeTimer()">
     <h1><img src="./ra.png" alt="RedAwning" height="75px" width="auto"/>RedAwning Bozotron5000!</h1>
-    <button class="button" type="button" onClick="playAudio('street_chicken.wav')">&#128378;</button>
-    <button class="button" type="button" onClick="playAudio('do_it_live.wav')">&#9889;</button>
-    <button class="button" type="button" onClick="playAudio('does_someone_need_a_hug.wav')">&#128080;</button>
-    <button class="button" type="button" onClick="playAudio('government_cheese.wav')">&#129472;</button>
-    <button class="button" type="button" onClick="playAudio('well_were_waiting.wav')">&#8986;</button>
-    <button class="button" type="button" onClick="playAudio('be_the_ball.wav')">&#9775;</button>
+    <div>
+      <h2>Audio</h2>
+      <button title="Dance Party" class="button" type="button" onClick="playAudio('street_chicken.wav')">&#128378;</button>
+      <button title="Do it live!" class="button" type="button" onClick="playAudio('do_it_live.wav')">&#9889;</button>
+      <button title="Hugs" class="button" type="button" onClick="playAudio('does_someone_need_a_hug.wav')">&#128080;</button>
+      <button title="Government cheese" class="button" type="button" onClick="playAudio('government_cheese.wav')">&#129472;</button>
+      <button title="We're waiting" class="button" type="button" onClick="playAudio('well_were_waiting.wav')">&#8986;</button>
+      <button title="Be the ball" class="button" type="button" onClick="playAudio('be_the_ball.wav')">&#9775;</button>
+    </div>
+    <div>
+      <h2>Temperature/Humidity</h2>
+      <label for="temp">Temperature</label><input readonly="readonly" id="temp"></input><br/>
+      <label for="humid">Humidity</label><input readonly="readonly" id="humid"></input><br/>
+      <label for="datetime">Last updated date/time</label><input readonl="readonly" id="datetime"></input><br/>
+      <button title="Refresh temperature/humidity" class="button" type="button" onClick="getTempHumidity()">&#8635;</button>
+      <button title="Refresh temperature/humidity" class="button" type="button" onClick="calibrateThermometer()">&#128208;</button><br/>
+    </div>
   </body>
 
 </html>
