@@ -1,7 +1,7 @@
 # Bozotron 5000
 import os
 from audio import init_audio, play_wave
-from display import init_display, update_text
+from display import init_display
 import socketpool
 from thermometer import calibrate, get_temperture_humidity, init_thermometer
 import json
@@ -92,5 +92,4 @@ def handle_temperature_post(request: Request):
     return Response(request, json.dumps(resp))
 
 
-update_text('Hello!')
-server.serve_forever(str(wifi.radio.ipv4_address), port=PORT)
+server.serve_forever(str(wifi.radio.ipv4_address), port=PORT, poll_interval=0.1)

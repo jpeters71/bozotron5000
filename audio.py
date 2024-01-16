@@ -20,7 +20,10 @@ def play_wave(filename):
     wave = audiocore.WaveFile(wave_file)
     print(f"playing wave: {wave_file}")
     i2s = audiobusio.I2SOut(i2s_bitclock, i2s_wordselect, i2s_datapin)
-    i2s.play(wave)
-    while i2s.playing:
-        pass
-    i2s.stop()
+    try:
+        i2s.play(wave)
+        while i2s.playing:
+            pass
+    finally:
+        i2s.stop()
+        i2s.deinit()

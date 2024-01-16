@@ -1,22 +1,19 @@
-
 import board
 import busio
 import displayio
 import fourwire
-from utils import turn_pin_on
 from adafruit_st7735r import ST7735R
-from adafruit_display_shapes.rect import Rect
 from adafruit_display_text import label
-import terminalio
+from utils import turn_pin_on
 
 
 # Display Pins
-tft_clk = board.D14 # SCK
-tft_mosi= board.D13 # SDA
+tft_clk = board.D14  # SCK
+tft_mosi = board.D13  # SDA
 tft_rst = board.D25
-tft_dc  = board.D2  # A0
-tft_cs  = board.D15
-display_power = board.D32 # LED
+tft_dc = board.D2  # A0
+tft_cs = board.D15
+display_power = board.D32  # LED
 
 main_group: displayio.Group = None
 display = None
@@ -39,8 +36,12 @@ def init_display():
     # Make the main display context
     main_group = displayio.Group()
     display.root_group = main_group
-    updating_label = label.Label(terminalio.FONT, text='Bozo', anchor_point=(0,0), anchored_position=(20,20))
+
+    image = displayio.OnDiskBitmap("static/ra.bmp")
+    tile_grid = displayio.TileGrid(image, pixel_shader=image.pixel_shader)
+    main_group.append(tile_grid)
+    # updating_label = label.Label(terminalio.FONT, text='Bozo', anchor_point=(0,0), anchored_position=(20,20))
 
 
-def update_text(text: str):
-    updating_label.text = text
+# def update_text(text: str):
+#     updating_label.text = text
