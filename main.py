@@ -10,7 +10,7 @@ import mdns
 from adafruit_httpserver import Server, Request, Response, FileResponse
 
 
-PORT = 9080
+PORT = 80
 
 # Setup
 init_display()
@@ -28,9 +28,10 @@ wifi.radio.connect(ssid, password)
 print('Connected to', ssid)
 
 pool = socketpool.SocketPool(wifi.radio)
-# mdns_server = mdns.Server(wifi.radio)
-# mdns_server.hostname = 'bozotron5000'
-# mdns_server.advertise_service(service_type='_http', protocol='_tcp', port=PORT)
+
+mdns_server = mdns.Server(wifi.radio)
+mdns_server.hostname = 'bozotron5000'
+mdns_server.advertise_service(service_type='_http', protocol='_tcp', port=PORT)
 
 server = Server(pool, '/static', debug=True)
 
